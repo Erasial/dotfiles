@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Get the local IP address  
+IP=$(hostname -I | awk '{print $1}')
+
+# Get the link speed using 'nmcli'
+# Replace 'eth0' with your network interface name if necessary  
+INTERFACE=$(nmcli -t -f DEVICE,TYPE conn show --active | grep -E 'ethernet|wifi' | cut -d: -f1)
+
+if [[ -n $INTERFACE ]]; then  
+    LINK_SPEED=$(nmcli -t -f GENERAL.CONNECTION,GENERAL.STATE dev show $INTERFACE | grep -E 'connected' | awk '{print $2}')
+    LINK_SPEED="${LINK_SPEED:-Disconnected}"
+else  
+    LINK_SPEED="Disconnected"
+fi
+
+# Define color codes  
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+RESET="\033[0m"
+
+# Format and output  
+if [[ -n $IP && $LINK_SPEED == "CONNECTED" ]]; then  
+    SPEED=$(nmcli -t -f SPEED dev show $INTERFACE | grep -E '[0-9]' | head -n 1)
+    echo -e "${GREEN}| $IP ($SPEED) |${RESET}"
+else  
+    echo -e "${RED}| No connection |${RESET}"
+fi
