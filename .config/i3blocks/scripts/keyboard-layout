@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+layout=$(xkblayout-state print '%s')
+variant=$(xkblayout-state print '%v')
+
+if [[ "$variant" != "" ]]; then
+	KBD=$variant
+elif [[ "$layout" = "us" ]]; then
+	KBD="en"
+elif [[ "$layout" = "ua" ]]; then
+	KBD="uk"
+else
+	KBD=$layout
+fi
+
+echo $KBD
+
